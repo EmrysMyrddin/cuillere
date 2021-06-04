@@ -1,4 +1,4 @@
-import { CuillereServer } from '@cuillere/server-postgres'
+import { CuillereServer, channelsPlugin } from '@cuillere/server-postgres'
 
 import { typeDefs } from './schema'
 import { resolvers } from './resolvers'
@@ -10,6 +10,7 @@ const server = new CuillereServer(
     resolvers,
   },
   {
+    plugins: [channelsPlugin()], // FIXME auto add in server
     poolManager,
   },
 )

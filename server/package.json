@@ -52,6 +52,7 @@
     "graphql-tools": "~4"
   },
   "dependencies": {
+    "@cuillere/channels": "^0.13.0",
     "@cuillere/core": "^0.13.0",
     "apollo-server-core": "~2.19.0",
     "apollo-server-koa": "~2.19.0",

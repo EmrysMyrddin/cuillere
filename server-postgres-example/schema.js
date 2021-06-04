@@ -9,4 +9,12 @@ export const typeDefs = gql`
     now: DateTime!
     wait: String
   }
+
+  type Subscription {
+    message: String! @channel
+  }
+
+  type Mutation {
+    sendMessage(message: String!): String!
+  }
 `

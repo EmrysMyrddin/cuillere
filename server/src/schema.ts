@@ -36,16 +36,20 @@ export function makeExecutableSchema<TContext extends any>(definition: IExecutab
     resolvers,
   })
 
-  Object.defineProperty(schema, CUILLERE_SCHEMA, {
-    enumerable: false,
-    value: true,
-    writable: false,
-  })
-
-  Object.defineProperty(schema, CUILLERE_PLUGINS, {
-    enumerable: false,
-    set(plugins: Plugin[]) {
-      this[CUILLERE_INSTANCE] = cuillere(...plugins)
+  Object.defineProperties(schema, {
+    [CUILLERE_SCHEMA]: {
+      enumerable: false,
+      value: true,
+      writable: false,
+    },
+    [CUILLERE_PLUGINS]: {
+      enumerable: false,
+      set(plugins: Plugin[]) {
+        Object.defineProperty(this, CUILLERE_INSTANCE, {
+          enumerable: false,
+          value: cuillere(...plugins),
+        })
+      },
     },
   })
 
@@ -54,6 +58,10 @@ export function makeExecutableSchema<TContext extends any>(definition: IExecutab
 
 export function isCuillereSchema(schema: GraphQLSchema): schema is CuillereSchema {
   return CUILLERE_SCHEMA in schema
+}
+
+export function assertCuillereSchema(schema: GraphQLSchema, reference = 'schema') {
+  if (!isCuillereSchema(schema)) throw new TypeError(`\`${reference}\` should be a \`CuillereSchema\``)
 }
 
 // FIXME add a test
@@ -91,7 +99,7 @@ function defaultFieldResolver<TSource, TContext, TArgs = { [argName: string]: an
     const value = source[info.fieldName]
     if (typeof value === 'function') {
       if (isGeneratorFunction(value)) {
-        if (!isCuillereSchema(info.schema)) throw TypeError('`info.schema` should be a `CuillereSchema`')
+        assertCuillereSchema(info.schema, 'info.schema')
         return info.schema[CUILLERE_INSTANCE].ctx(ctx[info.schema[CUILLERE_CONTEXT_KEY] ?? defaultContextKey]).call(value, args, ctx, info)
       }
       return value(args, ctx, info)

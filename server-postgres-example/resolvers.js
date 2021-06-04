@@ -1,5 +1,5 @@
 import { GraphQLDate, GraphQLDateTime } from 'graphql-iso-date'
-import { query } from '@cuillere/server-postgres'
+import { query, send } from '@cuillere/server-postgres'
 
 const simpleResolvers = {
   Query: {
@@ -11,6 +11,13 @@ const simpleResolvers = {
     * now() {
       const { rows: [{ now }] } = yield query({ text: 'SELECT NOW()', pool: 'geo' })
       return now
+    },
+  },
+
+  Mutation: {
+    * sendMessage(_, { message }, { channels }) {
+      yield send(channels.message, { message })
+      return message
     },
   },
 }

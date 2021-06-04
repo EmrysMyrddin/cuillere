@@ -2,7 +2,7 @@ import { isGeneratorFunction } from '@cuillere/core'
 import type { IEnumResolver, IResolverObject, IResolverOptions, IResolvers } from 'graphql-tools'
 import { isScalarType, GraphQLFieldResolver } from 'graphql'
 import { defaultContextKey } from './context'
-import { CUILLERE_CONTEXT_KEY, CUILLERE_INSTANCE, isCuillereSchema } from './schema'
+import { CUILLERE_CONTEXT_KEY, CUILLERE_INSTANCE, assertCuillereSchema } from './schema'
 
 type OneOrMany<T> = T | T[]
 
@@ -41,7 +41,7 @@ function wrapFieldResolver<TSource, TContext, TArgs = { [argName: string]: any }
   fn: GraphQLFieldResolver<TSource, TContext, TArgs>,
 ): GraphQLFieldResolver<TSource, TContext, TArgs> {
   return async (obj, args, ctx, info) => {
-    if (!isCuillereSchema(info.schema)) throw TypeError('`info.schema` should be a `CuillereSchema`')
+    assertCuillereSchema(info.schema, 'info.schema')
     return info.schema[CUILLERE_INSTANCE].ctx(ctx[info.schema[CUILLERE_CONTEXT_KEY] ?? defaultContextKey]).call(fn, obj, args, ctx, info)
   }
 }
