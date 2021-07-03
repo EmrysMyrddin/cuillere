@@ -1,5 +1,5 @@
 {
-  "name": "@cuillere/postgres",
+  "name": "@cuillere/crud",
   "version": "0.13.0",
   "main": "dist/node/index.js",
   "types": "dist/types",
@@ -8,14 +8,14 @@
   },
   "repository": "https://github.com/cuillerejs/cuillere",
   "author": {
-    "name": "Valentin COCAUD",
-    "email": "v.cocaud@gmail.com",
-    "url": "https://github.com/EmrysMyrddin"
+    "name": "Nicolas LEPAGE",
+    "url": "https://github.com/nlepage"
   },
   "contributors": [
     {
-      "name": "Nicolas LEPAGE",
-      "url": "https://github.com/nlepage"
+      "name": "Valentin COCAUD",
+      "email": "v.cocaud@gmail.com",
+      "url": "https://github.com/EmrysMyrddin"
     }
   ],
   "license": "Apache-2.0",
@@ -26,7 +26,7 @@
   ],
   "scripts": {
     "lint": "yarn eslint --ext .ts src",
-    "test": "jest --passWithNoTests",
+    "test": "jest",
     "clean:node-version": "rm -rf dist/node/$NODE_VERSION",
     "prebuild:node-version": "yarn clean:$NODE_VERSION",
     "build:node-version": "yarn tsc -p tsconfig-node$NODE_VERSION.json",
@@ -47,11 +47,6 @@
     "ci": "yarn build:node-version && yarn build:types && yarn lint && yarn test"
   },
   "peerDependencies": {
-    "@cuillere/core": "^0.13.0",
-    "pg": "~7||~8"
-  },
-  "devDependencies": {
-    "@cuillere/crud": "^0.13.0",
-    "@cuillere/server": "^0.13.0"
+    "@cuillere/core": "^0.13.0"
   }
 }

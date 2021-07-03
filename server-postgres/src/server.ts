@@ -23,12 +23,12 @@ export class CuillereServer extends CuillereServerBase {
 
 function buildServerConfig(config: CuillereConfig): CuillereConfigBase {
   return {
-    contextKey: config.contextKey,
+    contextKey: config?.contextKey,
     httpRequestTaskManager() {
       return new AsyncTaskManager(
         getClientManager({
-          poolConfig: config.poolConfig,
-          poolManager: config.poolManager,
+          poolConfig: config?.poolConfig,
+          poolManager: config?.poolManager,
           transactionManager: 'read-only',
         }),
       )
@@ -38,9 +38,9 @@ function buildServerConfig(config: CuillereConfig): CuillereConfigBase {
 
       return new AsyncTaskManager(
         getClientManager({
-          poolConfig: config.poolConfig,
-          poolManager: config.poolManager,
-          transactionManager: config.transactionManager ?? 'auto',
+          poolConfig: config?.poolConfig,
+          poolManager: config?.poolManager,
+          transactionManager: config?.transactionManager ?? 'auto',
         }),
       )
     },
@@ -51,6 +51,6 @@ function buildServerConfig(config: CuillereConfig): CuillereConfigBase {
 function mergePlugins(config: CuillereConfig) {
   return [
     clientPlugin(),
-    ...(config.plugins ?? []),
+    ...(config?.plugins ?? []),
   ]
 }

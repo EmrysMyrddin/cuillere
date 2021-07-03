@@ -7,40 +7,58 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [12.x, 14.x, 16.x]
+        node-version: [12, 14, 16]
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Setup node ${{ matrix.node-version }}
+      - name: Setup node ${{matrix.node-version}}
         uses: actions/setup-node@v2
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: ${{matrix.node-version}}
 
       - name: Install dependencies
         run: yarn --frozen-lockfile
 
       - name: CI core
-        run: yarn build && yarn lint && yarn test
+        run: yarn ci
         working-directory: ./core
+        env:
+          NODE_VERSION: ${{matrix.node-version}}
 
       - name: CI server
-        run: yarn build && yarn lint
+        run: yarn ci
         working-directory: ./server
+        env:
+          NODE_VERSION: ${{matrix.node-version}}
+
+      - name: CI crud
+        run: yarn ci
+        working-directory: ./crud
+        env:
+          NODE_VERSION: ${{matrix.node-version}}
 
       - name: CI postgres
-        run: yarn build && yarn lint
+        run: yarn ci
         working-directory: ./postgres
+        env:
+          NODE_VERSION: ${{matrix.node-version}}
 
       - name: CI server-postgres
-        run: yarn build && yarn lint
+        run: yarn ci
         working-directory: ./server-postgres
+        env:
+          NODE_VERSION: ${{matrix.node-version}}
 
       - name: CI mariadb
-        run: yarn build && yarn lint
+        run: yarn ci
         working-directory: ./mariadb
+        env:
+          NODE_VERSION: ${{matrix.node-version}}
 
       - name: CI channels
-        run: yarn build && yarn lint && yarn test
+        run: yarn ci
         working-directory: ./channels
+        env:
+          NODE_VERSION: ${{matrix.node-version}}

@@ -1,13 +1,12 @@
-import cuillere from '@cuillere/core'
-import { clientPlugin, DEFAULT_POOL, getClientManager, PoolManager, query, taskManagerPlugin } from '@cuillere/server-postgres'
+import { buildCrud, cuillere, clientPlugin, DEFAULT_POOL, getClientManager, mergeCruds, PoolManager, query, taskManagerPlugin } from '@cuillere/server-postgres'
 
 const poolConfig = [
   {
-    name: 'people',
+    name: 'identity',
     host: 'localhost',
     port: 54321,
-    database: 'people',
-    user: 'people',
+    database: 'identity',
+    user: 'identity',
     password: 'password',
   },
   {
@@ -32,35 +31,32 @@ function* ensureDatabase(name) {
 }
 
 function* ensureDatabases() {
-  yield* ensureDatabase('people')
+  yield* ensureDatabase('geo')
+  yield* ensureDatabase('identity')
 
-  // FIXME champ adresse
   yield query({
     text: `
-          CREATE TABLE IF NOT EXISTS people (
-            id SERIAL NOT NULL PRIMARY KEY,
-            firstname TEXT NOT NULL,
-            lastname TEXT NOT NULL
-          )
-        `,
-    pool: 'people',
+      CREATE TABLE IF NOT EXISTS addresses (
+        id SERIAL NOT NULL PRIMARY KEY,
+        number TEXT NOT NULL,
+        street TEXT NOT NULL,
+        postalcode TEXT NOT NULL,
+        city TEXT NOT NULL
+      )
+    `,
+    pool: 'geo',
   })
 
-  //  FIXME relation NN téléphone
-
-  yield* ensureDatabase('geo')
-
   yield query({
     text: `
-          CREATE TABLE IF NOT EXISTS addresses (
-            id SERIAL NOT NULL PRIMARY KEY,
-            number TEXT NOT NULL,
-            street TEXT NOT NULL,
-            postalcode TEXT NOT NULL,
-            city TEXT NOT NULL
-          )
-        `,
-    pool: 'geo',
+      CREATE TABLE IF NOT EXISTS people (
+        id SERIAL NOT NULL PRIMARY KEY,
+        firstname TEXT NOT NULL,
+        lastname TEXT NOT NULL,
+        "addressId" INT NOT NULL
+      )
+    `,
+    pool: 'identity',
   })
 }
 
@@ -83,3 +79,12 @@ export const initPostgres = () => cuillere(
   ),
   clientPlugin(),
 ).call(ensureDatabases)
+
+export const initCrud = () => cuillere(
+  taskManagerPlugin(
+    getClientManager({ poolManager }),
+  ),
+  clientPlugin(),
+).call(function* () {
+  return mergeCruds(yield buildCrud())
+})

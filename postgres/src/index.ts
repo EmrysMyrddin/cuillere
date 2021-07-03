@@ -1,4 +1,5 @@
 export * from './client-manager'
+export * from './crud'
 export * from './plugins'
 export * from './pool-manager'
 export * from './query-config'

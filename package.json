@@ -1,12 +1,13 @@
 {
   "private": true,
   "scripts": {
-    "build": "for project in core channels mariadb postgres server server-postgres; do echo Building $project...; (cd $project && yarn build); done",
-    "publish-all": "for project in core channels mariadb postgres server server-postgres; do echo Publishing $project...; (cd $project && yarn publish --no-git-tag-version --non-interactive); done"
+    "build:all": "for project in core channels crud mariadb postgres server server-postgres; do echo Building $project...; (cd $project && yarn build:all); done",
+    "publish:all": "for project in core channels crud mariadb postgres server server-postgres; do echo Publishing $project...; (cd $project && yarn publish --no-git-tag-version --non-interactive); done"
   },
   "workspaces": [
     "channels",
     "core",
+    "crud",
     "mariadb",
     "postgres",
     "server",

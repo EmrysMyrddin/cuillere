@@ -1,14 +1,16 @@
 import type { PoolClient } from 'pg'
 import type { TaskListener, TransactionManagerType } from '@cuillere/server'
 
-import { PoolManager, DEFAULT_POOL, PoolConfig } from './pool-manager'
-import { setQueryHandler } from './query-handler'
-import type { QueryConfig } from './query-config'
 import { setClientGetter } from './client-getter'
+import type { QueryConfig } from './query-config'
+import { setQueryHandler } from './query-handler'
+import { PoolManager, DEFAULT_POOL, PoolConfig } from './pool-manager'
+import { setPoolsGetter } from './pools-getter'
 import { TransactionManager, getTransactionManager } from './transaction-manager'
 
 export function getClientManager(options: ClientManagerOptions): ClientManager {
   const poolManager = options.poolManager ?? new PoolManager(options.poolConfig)
+  // FIXME this error will never trigger...
   if (!poolManager) throw TypeError('Client manager needs one of poolConfig or poolManager')
 
   let transactionManagerType = options.transactionManager
@@ -43,6 +45,7 @@ class ClientManagerImpl implements ClientManager {
   initialize(ctx: any) {
     setClientGetter(ctx, name => this.getClient(name))
     setQueryHandler(ctx, query => this.query(query))
+    setPoolsGetter(ctx, () => this.getPools())
   }
 
   private async query(query: QueryConfig) {
@@ -56,6 +59,10 @@ class ClientManagerImpl implements ClientManager {
       if (this.transactionManager) this.clients[name] = this.transactionManager.connect(this.clients[name])
     }
     return this.clients[name]
+  }
+
+  private getPools() {
+    return Object.keys(this.poolManager.pools)
   }
 
   async preComplete(result: any) {

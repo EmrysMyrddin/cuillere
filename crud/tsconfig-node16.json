@@ -1,0 +1,10 @@
+{
+  "extends": "../tsconfig-node16.json",
+  "compilerOptions": {
+    "outDir": "dist/node/16",
+    "rootDir": "src"
+  },
+  "exclude": [
+    "src/**/*.spec.ts"
+  ]
+}
