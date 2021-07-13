@@ -35,7 +35,7 @@ function* ensureDatabase(name) {
 export const initMariadb = () => cuillere(
   taskManagerPlugin(
     getConnectionManager({
-      poolConfig: [
+      poolManager: new PoolManager([
         {
           name: DEFAULT_POOL,
           host: 'localhost',
@@ -48,7 +48,7 @@ export const initMariadb = () => cuillere(
           name: 'contacts',
           ...poolConfig,
         },
-      ],
+      ]),
       transactionManager: 'none',
     }),
   ),

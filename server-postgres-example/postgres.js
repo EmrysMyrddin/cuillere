@@ -1,6 +1,14 @@
-import { buildCrud, cuillere, clientPlugin, DEFAULT_POOL, getClientManager, mergeCruds, PoolManager, query, taskManagerPlugin } from '@cuillere/server-postgres'
+import {
+  cuillere,
+  postgresPlugin,
+  DEFAULT_POOL,
+  getClientManager,
+  PoolManager,
+  query,
+  taskManagerPlugin,
+} from '@cuillere/server-postgres'
 
-const poolConfig = [
+export const poolConfig = [
   {
     name: 'identity',
     host: 'localhost',
@@ -18,8 +26,6 @@ const poolConfig = [
     password: 'password',
   },
 ]
-
-export const poolManager = new PoolManager(poolConfig)
 
 function* ensureDatabase(name) {
   const { rowCount } = yield query({ text: 'SELECT 1 FROM pg_catalog.pg_database WHERE datname = $1', values: [name] })
@@ -60,31 +66,30 @@ function* ensureDatabases() {
   })
 }
 
-export const initPostgres = () => cuillere(
-  taskManagerPlugin(
-    getClientManager({
-      poolConfig: [
-        {
-          name: DEFAULT_POOL,
-          host: 'localhost',
-          port: 54321,
-          database: 'postgres',
-          user: 'postgres',
-          password: 'password',
-        },
-        ...poolConfig,
-      ],
-      transactionManager: 'none',
-    }),
-  ),
-  clientPlugin(),
-).call(ensureDatabases)
+export const initPostgres = async () => {
+  const poolManager = new PoolManager([
+    {
+      name: DEFAULT_POOL,
+      host: 'localhost',
+      port: 54321,
+      database: 'postgres',
+      user: 'postgres',
+      password: 'password',
+    },
+    ...poolConfig,
+  ])
 
-export const initCrud = () => cuillere(
-  taskManagerPlugin(
-    getClientManager({ poolManager }),
-  ),
-  clientPlugin(),
-).call(function* () {
-  return mergeCruds(yield buildCrud())
-})
+  try {
+    await cuillere(
+      taskManagerPlugin(
+        getClientManager({
+          poolManager,
+          transactionManager: 'none',
+        }),
+      ),
+      postgresPlugin(),
+    ).call(ensureDatabases)
+  } finally {
+    await poolManager.end()
+  }
+}

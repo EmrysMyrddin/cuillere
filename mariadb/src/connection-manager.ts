@@ -1,25 +1,23 @@
 import type { PoolConnection } from 'mariadb'
 import type { TaskListener, TransactionManagerType } from '@cuillere/server'
 
-import { PoolManager, DEFAULT_POOL, PoolConfig } from './pool-manager'
+import { PoolManager, DEFAULT_POOL } from './pool-manager'
 import { setQueryHandler } from './query-handler'
 import type { QueryOptions } from './query-options'
 import { setConnectionGetter } from './connection-getter'
 import { TransactionManager, getTransactionManager } from './transaction-manager'
 
-export function getConnectionManager(options: ConnectionManagerOptions): ConnectionManager {
-  const poolManager = options.poolManager ?? new PoolManager(options.poolConfig)
+export function getConnectionManager({ poolManager, transactionManager }: ConnectionManagerOptions): ConnectionManager {
   if (!poolManager) throw TypeError('Connection manager needs one of poolConfig or poolManager')
 
-  let transactionManagerType = options.transactionManager
+  let transactionManagerType = transactionManager
   if (transactionManagerType === 'auto') transactionManagerType = Object.keys(poolManager.pools).length === 1 ? 'default' : 'two-phase'
 
   return new ConnectionManagerImpl(poolManager, getTransactionManager(transactionManagerType))
 }
 
 export interface ConnectionManagerOptions {
-  poolConfig?: PoolConfig | PoolConfig[]
-  poolManager?: PoolManager
+  poolManager: PoolManager
   transactionManager?: TransactionManagerType
 }
 

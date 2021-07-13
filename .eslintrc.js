@@ -44,6 +44,7 @@ module.exports = {
   rules: {
     '@typescript-eslint/explicit-function-return-type': 'off',
     '@typescript-eslint/explicit-module-boundary-types': 'off',
+    '@typescript-eslint/indent': ['error', 2],
     '@typescript-eslint/no-explicit-any': 'off',
     '@typescript-eslint/member-delimiter-style': ['error', {
       multiline: {
@@ -64,6 +65,7 @@ module.exports = {
     }],
     'import/no-extraneous-dependencies': 'off',
     'import/prefer-default-export': 'off',
+    indent: 'off',
     'max-classes-per-file': 'off',
     'max-len': ['error', { code: 160 }],
     'no-await-in-loop': 'off',
@@ -96,6 +98,7 @@ module.exports = {
         message: '`with` is disallowed in strict mode because it makes code impossible to predict and optimize.',
       },
     ],
+    'no-return-assign': 'off',
     'no-shadow': 'off',
     'no-use-before-define': 'off',
     'object-curly-newline': ['error', { consistent: true }],

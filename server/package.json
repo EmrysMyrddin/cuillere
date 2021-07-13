@@ -30,7 +30,7 @@
   ],
   "scripts": {
     "lint": "yarn eslint --ext .ts src",
-    "test": "jest --passWithNoTests",
+    "test": "jest",
     "clean:node-version": "rm -rf dist/node/$NODE_VERSION",
     "prebuild:node-version": "yarn clean:$NODE_VERSION",
     "build:node-version": "yarn tsc -p tsconfig-node$NODE_VERSION.json",

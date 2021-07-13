@@ -1,6 +1,6 @@
 import { Crud } from './crud'
 
-export function mergeCruds(...cruds: Crud[]): Crud {
+export function mergeCruds(cruds: Crud[]): Crud {
   const crud: Crud = {}
 
   for (const [name, provider] of cruds.flatMap(Object.entries)) {
@@ -21,9 +21,9 @@ function promote(parent: any, levels = 2) {
   const childrenFields = children.flatMap(Object.entries)
 
   groupByName(childrenFields)
-  // We promote only fields if it is not already present in the parent
+    // We promote only fields if it is not already present in the parent
     .filter(([name]) => !parent[name])
-  // We promote only fields when there is no duplicates
+    // We promote only fields when there is no duplicates
     .filter(([, { length }]) => length === 1)
     .forEach(([name, [child]]) => {
       parent[name] = child

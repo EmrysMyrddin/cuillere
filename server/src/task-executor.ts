@@ -15,7 +15,7 @@ export function taskExecutorPlugin(options: GeneratorTaskExecutorOptions<[any]>)
   return {
     handlers: {
       async* '@cuillere/core/start'(operation: Operation, ctx) {
-        const taskManager = options.taskManager(ctx)
+        const taskManager = await options.taskManager(ctx)
 
         if (!taskManager) yield delegate(operation)
 

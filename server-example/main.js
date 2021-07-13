@@ -1,10 +1,10 @@
-import { AsyncTaskManager, CuillereServer } from '@cuillere/server'
-import { getClientManager, clientPlugin } from '@cuillere/postgres'
+import { CuillereServer } from '@cuillere/server'
+import { postgresServerPlugin } from '@cuillere/postgres'
 import { getConnectionManager, connectionPlugin } from '@cuillere/mariadb'
 
 import { typeDefs } from './schema'
 import { resolvers } from './resolvers'
-import { initPostgres, poolManager as postgresPoolManager } from './postgres'
+import { initPostgres, poolConfig as postgresPoolConfig } from './postgres'
 import { initMariadb, poolManager as mariadbPoolManager } from './mariadb'
 
 const server = new CuillereServer(
@@ -13,35 +13,27 @@ const server = new CuillereServer(
     resolvers,
   },
   {
-    httpRequestTaskManager() {
-      return new AsyncTaskManager(
-        getClientManager({
-          poolManager: postgresPoolManager,
-          transactionManager: 'read-only',
-        }),
-        getConnectionManager({
-          poolManager: mariadbPoolManager,
-          transactionManager: 'read-only',
-        }),
-      )
-    },
-    graphqlRequestTaskManager(reqCtx) {
-      if (reqCtx.operation.operation !== 'mutation') return null
-
-      return new AsyncTaskManager(
-        getClientManager({
-          poolManager: postgresPoolManager,
-          transactionManager: 'two-phase',
-        }),
-        getConnectionManager({
-          poolManager: mariadbPoolManager,
-          transactionManager: 'two-phase',
-        }),
-      )
-    },
     plugins: [
-      clientPlugin(),
-      connectionPlugin(),
+      postgresServerPlugin({
+        poolManager: postgresPoolConfig,
+      }),
+      // FIXME use mariadbServerPlugin
+      () => ({
+        httpRequestListeners() {
+          return getConnectionManager({
+            poolManager: mariadbPoolManager,
+            transactionManager: 'read-only',
+          })
+        },
+        graphqlRequestListeners(reqCtx) {
+          if (reqCtx.operation.operation !== 'mutation') return
+          return getConnectionManager({
+            poolManager: mariadbPoolManager,
+            transactionManager: 'two-phase',
+          })
+        },
+        plugins: connectionPlugin(),
+      }),
     ],
   },
 )

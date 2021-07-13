@@ -1,13 +1,13 @@
 import { Plugin, OperationObject } from '@cuillere/core'
 
-import { getQueryHandler } from '../query-handler'
-import type { QueryConfig } from '../query-config'
-import { getClientGetter } from '../client-getter'
-import { getPoolsGetter } from '../pools-getter'
+import { getQueryHandler } from './query-handler'
+import type { QueryConfig } from './query-config'
+import { getClientGetter } from './client-getter'
+import { getPoolsGetter } from './pools-getter'
 
 const namespace = '@cuillere/postgres'
 
-export function clientPlugin(): Plugin {
+export function postgresPlugin(): Plugin {
   return {
     namespace,
 
